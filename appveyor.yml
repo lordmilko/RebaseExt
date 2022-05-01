@@ -1,0 +1,32 @@
+version: 'Build #{build}'
+image: Visual Studio 2015
+configuration: Release
+build_script:
+  - msbuild RebaseExt.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Platform=x86
+  - msbuild RebaseExt.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Platform=x64
+test_script:
+  - vstest.console /logger:Appveyor RebaseExt.Tests\bin\x86\%CONFIGURATION%\RebaseExt.Tests.dll /platform:x86 /InIsolation
+  - vstest.console /logger:Appveyor RebaseExt.Tests\bin\x64\%CONFIGURATION%\RebaseExt.Tests.dll /platform:x64 /InIsolation
+after_test:
+  - ps: |
+      mkdir Artifacts\x86 -Force | Out-Null
+      mkdir Artifacts\x64 -Force | Out-Null
+
+      $folder = "RebaseExt\bin\*\$env:CONFIGURATION"
+
+      $files = gci -Recurse "$folder\*.dll","$folder\*.pdb"
+
+      $files | foreach {
+        $arch = $_.FullName -replace ".+\\bin\\(.+?)\\$env:configuration\\.+",'$1'
+        Copy-Item $_.FullName "Artifacts\$arch\"
+      }
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+artifacts:
+  - path: Artifacts
+    name: RebaseExt
+skip_commits:
+  files:
+    - '**/*.md'
+    - '**/*.yml'
+skip_tags: true

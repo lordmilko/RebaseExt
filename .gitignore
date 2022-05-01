@@ -1,0 +1,36 @@
+#################
+# Visual Studio #
+#################
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+.vs/
+*.aps
+*.db
+*.opendb
+*.ipch
+TestResults/
+
+####################
+# Windows detritus #
+####################
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+##################
+# MacOS detritus #
+##################
+
+# Folder config file
+.DS_Store
